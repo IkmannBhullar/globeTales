@@ -1,0 +1,3 @@
+order_number,issue_type,estimated_loss,notes
+MER-2002,delayed,18,Customer refunded shipping upgrade.
+MER-2004,lost,68,Carrier marked the parcel as lost in transit.

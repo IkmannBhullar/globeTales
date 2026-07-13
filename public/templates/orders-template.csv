@@ -1,0 +1,4 @@
+order_number,order_date,sku,quantity,sale_price,refund_amount,shipping_status
+MER-2001,2026-04-01,SS-TEE-001,2,34,0,delivered
+MER-2001,2026-04-01,RV-SOC-005,1,18,0,delivered
+MER-2002,2026-04-03,CC-SWT-002,1,68,0,delayed

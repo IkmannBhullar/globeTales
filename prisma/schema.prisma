@@ -1,0 +1,168 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum ScrapbookLayoutType {
+  GRID
+  COLLAGE
+  TIMELINE
+}
+
+enum ScrapbookEntryType {
+  PHOTO
+  JOURNAL
+  HIGHLIGHT
+}
+
+model User {
+  id                      String                  @id @default(cuid())
+  name                    String
+  email                   String                  @unique
+  passwordHash            String
+  profileImage            String?
+  travelPreferences       Json?
+  createdAt               DateTime                @default(now())
+  updatedAt               DateTime                @updatedAt
+  itineraries             Itinerary[]
+  recentlyViewedCountries RecentlyViewedCountry[]
+  savedCountries          SavedCountry[]
+  scrapbooks              Scrapbook[]
+}
+
+model Country {
+  id                  String                 @id @default(cuid())
+  code                String                 @unique
+  name                String
+  flagEmoji           String
+  capital             String
+  continent           String
+  region              String
+  currency            String
+  languages           String[]
+  description         String
+  shortDescription    String
+  heroImage           String
+  cardImage           String
+  galleryImages       String[]
+  averageDailyBudget  Int
+  recommendedDuration String
+  bestTimeToVisit     String
+  climate             String
+  budgetLevel         String
+  popularity          Int
+  travelStyle         String[]
+  timeZones           String[]
+  weatherNote         String
+  safetyNotes         String
+  visaDisclaimer      String
+  culturalEtiquette   String[]
+  popularCities       String[]
+  attractions         String[]
+  foods               String[]
+  transportation      String[]
+  activities          String[]
+  sampleItineraries   Json
+  scrapbookHighlights String[]
+  createdAt           DateTime               @default(now())
+  updatedAt           DateTime               @updatedAt
+  itineraries         Itinerary[]
+  savedBy             SavedCountry[]
+  scrapbooks          Scrapbook[]
+  viewedBy            RecentlyViewedCountry[]
+}
+
+model SavedCountry {
+  id        String   @id @default(cuid())
+  userId    String
+  countryId String
+  createdAt DateTime @default(now())
+  country   Country  @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, countryId])
+  @@index([userId, createdAt])
+}
+
+model RecentlyViewedCountry {
+  id        String   @id @default(cuid())
+  userId    String
+  countryId String
+  viewedAt  DateTime @default(now())
+  country   Country  @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, countryId])
+  @@index([userId, viewedAt])
+}
+
+model Itinerary {
+  id                String   @id @default(cuid())
+  userId            String
+  countryId         String
+  title             String
+  startDate         DateTime
+  endDate           DateTime
+  travelerCount     Int
+  budget            Int
+  interests         String[]
+  travelPreferences Json
+  generatedContent  Json
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  country           Country  @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scrapbooks        Scrapbook[]
+
+  @@index([userId, createdAt])
+  @@index([countryId, startDate])
+}
+
+model Scrapbook {
+  id             String              @id @default(cuid())
+  userId         String
+  countryId      String
+  itineraryId    String?
+  title          String
+  description    String?
+  coverImage     String?
+  startDate      DateTime?
+  endDate        DateTime?
+  layoutType     ScrapbookLayoutType @default(GRID)
+  rating         Int?
+  favoriteMemory String?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  country        Country             @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  itinerary      Itinerary?          @relation(fields: [itineraryId], references: [id], onDelete: SetNull)
+  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entries        ScrapbookEntry[]
+
+  @@index([userId, createdAt])
+  @@index([countryId, createdAt])
+}
+
+model ScrapbookEntry {
+  id          String             @id @default(cuid())
+  scrapbookId String
+  entryType   ScrapbookEntryType
+  imageUrl    String?
+  caption     String?
+  journalText String?
+  city        String?
+  location    String?
+  restaurant  String?
+  activity    String?
+  entryDate   DateTime?
+  sortOrder   Int                @default(0)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  scrapbook   Scrapbook          @relation(fields: [scrapbookId], references: [id], onDelete: Cascade)
+
+  @@index([scrapbookId, sortOrder])
+}

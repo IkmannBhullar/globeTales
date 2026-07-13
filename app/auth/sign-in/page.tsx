@@ -1,5 +1,5 @@
 import { AuthForm } from "@/components/auth/auth-form";
-
+// This is page for signin
 export default function SignInPage({
   searchParams
 }: {

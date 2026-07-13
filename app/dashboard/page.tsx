@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { getDashboardData } from "@/lib/server/dashboard";
 import { getCurrentSession } from "@/lib/server/session";
-
+//This is to double check the github is connected
 export default async function DashboardPage() {
   const session = await getCurrentSession();
 
